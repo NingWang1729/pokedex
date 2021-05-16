@@ -7,9 +7,9 @@ import { useState } from 'react';
 
 function App() {
 
-  const [credentials, setcredentials] = useState({username : "", password : "", token : "" })
-  const updateLogin = (new_username, new_password, new_token) => {
-    setcredentials({username : new_username, password : new_password, token : new_token})
+  const [credentials, setcredentials] = useState({username : "", password : "", token : "", userid : "" })
+  const updateLogin = (new_username, new_password, new_token, new_userid) => {
+    setcredentials({username : new_username, password : new_password, token : new_token, userid : new_userid})
   }
   return (
     <div className="App">
@@ -18,6 +18,7 @@ function App() {
         <p>Username: {credentials.username}</p>
         <p>Password: {credentials.password}</p>
         <p>Token: {credentials.token}</p>
+        <p>User_id: {credentials.userid}</p>
         <BrowserRouter basename={window.location.path || ''}>
           <Switch>
             <Route path="/" exact={true} component={Login}/>

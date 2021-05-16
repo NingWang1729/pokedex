@@ -8,6 +8,7 @@ function Poketch () {
     // Better than react hooks imo
     const context = React.useContext(LoginContext);
     var [favorites, setfavorites] = useState(null);
+    var [userid, setuserid] = useState(context.credentials.userid);
     var [pokemon, setpokemon] = useState([]);
     var [loading, setloading] = useInfiniteScroll(loadpokemon);
     var [page, setpage] = useState(0);
@@ -69,7 +70,12 @@ function Poketch () {
         .then(
             (data) => {
                 console.log(data);
-                setfavorites(data[0].favorites);
+                if (data.length > 0) {
+                    setfavorites(data[data.length - 1].favorites);
+                    setuserid(data[data.length - 1].user);
+                } else {
+                    console.log("no favorites yet!")
+                }
             }
         ).catch(
             (error) => {
@@ -80,9 +86,50 @@ function Poketch () {
         );
     }, [])
 
+    useEffect(() => {
+        console.log("favorites changed to", favorites);
+        console.log({ "favorites": favorites, "user" : userid.toString() });
+        axios.post(`http://127.0.0.1:8000/api/user_favorites/`, { "favorites": favorites, "user" : userid.toString() }, {
+            method : 'POST',
+            headers : { 'Content-Type' : 'application/json' },
+            body : { "favorites": favorites, "user" : userid.toString() }
+        })
+        .then(
+            (res) => {
+                if (res.ok) {
+                    console.log("Updated favorite Pokemon!");
+                } else {
+                    console.log(res);
+                    throw new Error('Network response was not ok.');
+                }
+                return res.json();
+            }
+        )
+        .then(
+            (data) => {
+                console.log(data);
+            }
+        ).catch(
+            (error) => {
+                console.log(error);
+            }
+        );
+    }, [favorites])
+
     function update_favorites (pokemon_id) {
         console.log("updating...", pokemon_id);
-        setfavorites([...new Set(favorites.split(',')).add(pokemon_id)].sort().join());
+        let favs;
+        if (favorites == null) {
+            favs = new Set([]);
+        } else {
+            favs = new Set(favorites.split(','));
+        }
+        if (pokemon_id in favs) {
+            favs.remove(pokemon_id);
+        } else {
+            favs.add(pokemon_id);
+        }
+        setfavorites([...favs].sort().join());
     }
 
     function display_favorites() {
@@ -92,7 +139,7 @@ function Poketch () {
             return favorites.split(',').map((pokemon_id) => {
                 return <Fragment>
                     <div className="pokeball">
-                        <p>{pokemon_id}</p>
+                        <p>{pokemon_id}/{userid}</p>
                     </div>
                 </Fragment>
             })

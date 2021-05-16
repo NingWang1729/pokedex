@@ -33,7 +33,7 @@ function Login () {
         .then(
             (data) => {
                 console.log(data.token);
-                context.updateLogin(context.credentials.username, context.credentials.password, data.token);
+                context.updateLogin(context.credentials.username, context.credentials.password, data.token, data.userid);
                 gotopoketch();
             }
         ).catch(
@@ -42,7 +42,6 @@ function Login () {
                 console.log(error);
             }
         );
-        // Logs in, still needs to do_Something();
     }
 
     async function signup() {
@@ -84,7 +83,7 @@ function Login () {
                     type="text" 
                     name="username" 
                     value={context.credentials.username} 
-                    onChange={(event) => {context.updateLogin(event.target.value, context.credentials.password, context.credentials.token);}}
+                    onChange={(event) => {context.updateLogin(event.target.value, context.credentials.password, context.credentials.token, context.credentials.userid);}}
                 />
             </label>
             <label>
@@ -93,7 +92,7 @@ function Login () {
                     type="text" 
                     name="password" 
                     value={context.credentials.password} 
-                    onChange={(event) => {context.updateLogin(context.credentials.username, event.target.value, context.credentials.token);}}
+                    onChange={(event) => {context.updateLogin(context.credentials.username, event.target.value, context.credentials.token, context.credentials.userid);}}
                 />
             </label>
             <button onClick={login}>Log in</button>
