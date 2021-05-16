@@ -15,4 +15,11 @@ README:
             For a centralized "state", React Context is used to maintain state.
 
     Day 2:
-        TBD.
+        Made the api calls to pokeapi
+        Added infinite pagination to frontend
+        loaded favorites from backend to frontend
+        finished login page functionality with forced login
+
+    Day 3:
+        TBD
+
