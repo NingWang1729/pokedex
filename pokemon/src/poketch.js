@@ -45,7 +45,9 @@ function Poketch () {
         })
         .then(
             (res) => {
-                if (res.ok) {
+                if (context.credentials.username == "") {
+                    throw new Error("Must be logged in to use!")
+                } else if (res.ok) {
                     alert("Logged In!");
                     console.log("Valid credentials");
                 } else {
@@ -62,7 +64,7 @@ function Poketch () {
             }
         ).catch(
             (error) => {
-                alert("INVALID USERNAME OR PASSWORD!");
+                alert(error);
                 console.log(error);
                 history.push('/login');
             }
