@@ -18,11 +18,11 @@ function Poketch () {
 
     let history = useHistory();
 
-    async function getpokes(page) {
+    async function getpokes() {
         setloading(true);
         var new_pokes = []
-        for (let i = page * 30 + 1; i < 31; i++) {
-            console.log(i);
+        for (let i = page * 30 + 1; i < page * 30 + 31; i++) {
+            console.log("Loading pokemon #", i);
             await axios
             .get(`https://pokeapi.co/api/v2/pokemon/${i}`)
             .then(res => {
@@ -34,10 +34,11 @@ function Poketch () {
         }
         setpage(page + 1);
         setpokemon(pokemon.concat(new_pokes));
+        setloading(false);
     }
 
     useEffect(() => {
-        getpokes(page);
+        getpokes();
         console.log(pokemon);
         fetch(`http://127.0.0.1:8000/api/user_favorites/?username=${context.credentials.username}`, {
             method : 'GET',
@@ -48,7 +49,7 @@ function Poketch () {
                 if (context.credentials.username == "") {
                     throw new Error("Must be logged in to use!")
                 } else if (res.ok) {
-                    alert("Logged In!");
+                    alert("Displaying Pokemon!");
                     console.log("Valid credentials");
                 } else {
                     console.log(res);
@@ -85,7 +86,6 @@ function Poketch () {
                         <p>{pokemon_id}</p>
                         <button onClick={() => {update(pokemon_id);}}>Pokemon#20</button>
                     </div>
-                    <button onClick={getpokes.bind(this, 0)}></button>
                 </Fragment>
             })
         }
@@ -130,6 +130,7 @@ function Poketch () {
             <p>Poketch</p>
             {display_favorites()}
             <h1>{pokemon.length}</h1>
+            <button onClick={getpokes}>GETMOREPOKES</button>
             <table className="pokemon-table">
                 <tbody>
                     {display_pokes()}
