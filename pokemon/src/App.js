@@ -1,4 +1,4 @@
-import {BrowserRouter, Route} from 'react-router-dom';
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import LoginContext from './context';
 import Login from './login';
 import Poketch from './poketch';
@@ -19,8 +19,11 @@ function App() {
         <p>Password: {credentials.password}</p>
         <p>Token: {credentials.token}</p>
         <BrowserRouter basename={window.location.path || ''}>
-          <Route path="/" exact={true} component={Login}/>
-          <Route path="/poketch" exact={true} component={Poketch}/>
+          <Switch>
+            <Route path="/" exact={true} component={Login}/>
+            <Route path="/login" exact={true} component={Login}/>
+            <Route path="/poketch" exact={true} component={Poketch}/>
+          </Switch>
         </BrowserRouter>
       </LoginContext.Provider>
         

@@ -1,10 +1,14 @@
 import React, { useState, useEffect, Fragment } from 'react';
+import { useHistory } from "react-router-dom";
 import LoginContext from './context';
 
 function Login () {
     // Better than react hooks imo
     const context = React.useContext(LoginContext);
-
+    let history = useHistory();
+    function gotopoketch () {
+        history.push("/poketch");
+    }
     // Login function
     async function login (e) {
         console.log("Username:", context.credentials.username);
@@ -30,6 +34,7 @@ function Login () {
             (data) => {
                 console.log(data.token);
                 context.updateLogin(context.credentials.username, context.credentials.password, data.token);
+                gotopoketch();
             }
         ).catch(
             (error) => {
