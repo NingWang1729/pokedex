@@ -9,21 +9,30 @@ function Poketch () {
     const context = React.useContext(LoginContext);
     var [favorites, setfavorites] = useState(null);
     var [pokemon, setpokemon] = useState([]);
-    var [loading, setloading] = useInfiniteScroll(fetchMoreListItems);
+    var [loading, setloading] = useInfiniteScroll(loadpokemon);
     var [page, setpage] = useState(0);
     let history = useHistory();
 
-    function fetchMoreListItems() {
+    function loadpokemon() {
         setTimeout(() => {
-          getpokes();
-          setloading(false);
-        }, 2000);
+            getpokes();
+            if (page < 30) {
+                setloading(false);
+            }
+        }, 500);
       }
 
     async function getpokes() {
-        alert("LOADING...")
+        if (page >= 30) {
+            return;
+        }
         var new_pokes = []
         for (let i = page * 30 + 1; i < page * 30 + 31; i++) {
+            if (i == 899) {
+                alert("Out of usable pokemon! Let's wait for Sinnoh remakes!")
+                console.log("Out of usable pokemon! Let's wait for Sinnoh remakes!")
+                break;
+            }
             await axios
             .get(`https://pokeapi.co/api/v2/pokemon/${i}`)
             .then(res => {
@@ -39,7 +48,6 @@ function Poketch () {
 
     useEffect(() => {
         getpokes();
-        console.log(pokemon);
         fetch(`http://127.0.0.1:8000/api/user_favorites/?username=${context.credentials.username}`, {
             method : 'GET',
             headers : { 'Content-Type' : 'application/json' },
@@ -109,7 +117,6 @@ function Poketch () {
                 if (rest.length > 0) {
                     pokearray.push(rest);
                 }
-                console.log(pokearray)
                 return pokearray.map((pokerow, pokerowindex)=>{
                     return <tr>
                         {pokerow.map((pokentry, pokentryindex)=>{
@@ -121,8 +128,8 @@ function Poketch () {
                 })
             }
         }
-        catch (e) {
-            console.log(e);
+        catch (error) {
+            console.log(error);
         }
     }
     return (
@@ -130,12 +137,12 @@ function Poketch () {
             <p>Poketch</p>
             {display_favorites()}
             <h1>{pokemon.length}</h1>
-            <button onClick={getpokes}>GETMOREPOKES</button>
             <table className="pokemon-table">
                 <tbody>
                     {display_pokes()}
                 </tbody>
             </table>
+            <button onClick={getpokes}>Loading slowly? Force a manual load!</button>
         </Fragment>
     );
 }
