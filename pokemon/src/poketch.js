@@ -69,7 +69,7 @@ function Poketch () {
         .then(
             (data) => {
                 console.log(data);
-                setfavorites(data[0]);
+                setfavorites(data[0].favorites);
             }
         ).catch(
             (error) => {
@@ -80,19 +80,19 @@ function Poketch () {
         );
     }, [])
 
-    function update (pokemon_id) {
+    function update_favorites (pokemon_id) {
         console.log("updating...", pokemon_id);
+        setfavorites([...new Set(favorites.split(',')).add(pokemon_id)].sort().join());
     }
 
     function display_favorites() {
         if (favorites == null) {
             return <p>No favorites!</p>
         } else {
-            return favorites.favorites.split(',').map((pokemon_id) => {
+            return favorites.split(',').map((pokemon_id) => {
                 return <Fragment>
                     <div className="pokeball">
                         <p>{pokemon_id}</p>
-                        <button onClick={() => {update(pokemon_id);}}>Pokemon#20</button>
                     </div>
                 </Fragment>
             })
@@ -122,6 +122,7 @@ function Poketch () {
                         {pokerow.map((pokentry, pokentryindex)=>{
                             return <td key={pokerowindex * 3 + pokentryindex + 1} id={pokerowindex * 3 + pokentryindex + 1}>
                                     <p>{pokentry.species.name}</p>
+                                    <button onClick={() => {update_favorites(pokerowindex * 3 + pokentryindex + 1);}}>Pokemon#{pokerowindex * 3 + pokentryindex + 1}</button>
                                 </td>
                         })}
                     </tr>
