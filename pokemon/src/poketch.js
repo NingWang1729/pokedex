@@ -174,7 +174,9 @@ function Poketch () {
                         {pokerow.map((pokentry, pokentryindex)=>{
                             return <td key={pokerowindex * 3 + pokentryindex + 1} id={pokerowindex * 3 + pokentryindex + 1}>
                                     <p>{pokentry.species.name}</p>
-                                    <button onClick={() => {update_favorites(pokerowindex * 3 + pokentryindex + 1);}}>Pokemon#{pokerowindex * 3 + pokentryindex + 1}</button>
+                                    <img src={pokentry.sprites.front_default} alt={pokentry.species.name + "picture"}/>
+                                    <br />
+                                    <button onClick={() => {update_favorites(pokerowindex * 3 + pokentryindex + 1);}}>Fav#{pokerowindex * 3 + pokentryindex + 1}</button>
                                 </td>
                         })}
                     </tr>
