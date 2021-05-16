@@ -47,6 +47,7 @@ function Poketch () {
         setpokemon(pokemon.concat(new_pokes));
     }
 
+    // Component did mount
     useEffect(() => {
         getpokes();
         fetch(`http://127.0.0.1:8000/api/user_favorites/?username=${context.credentials.username}`, {
@@ -86,6 +87,7 @@ function Poketch () {
         );
     }, [])
 
+    // Component did update [favorites]
     useEffect(() => {
         console.log("favorites changed to", favorites);
         console.log({ "favorites": favorites, "user" : userid.toString() });
@@ -116,6 +118,7 @@ function Poketch () {
         );
     }, [favorites])
 
+    // Updates favorites
     function update_favorites (pokemon_id) {
         console.log("updating...", pokemon_id);
         let favs;
@@ -124,14 +127,17 @@ function Poketch () {
         } else {
             favs = new Set(favorites.split(','));
         }
-        if (pokemon_id in favs) {
-            favs.remove(pokemon_id);
+        console.log(favs)
+        if (favs.has(pokemon_id.toString())) {
+            alert("deleting")
+            favs.delete(pokemon_id.toString());
         } else {
             favs.add(pokemon_id);
         }
         setfavorites([...favs].sort().join());
     }
 
+    // Display favorites (debugging)
     function display_favorites() {
         if (favorites == null) {
             return <p>No favorites!</p>
@@ -139,7 +145,7 @@ function Poketch () {
             return favorites.split(',').map((pokemon_id) => {
                 return <Fragment>
                     <div className="pokeball">
-                        <p>{pokemon_id}/{userid}</p>
+                        <p>{pokemon_id}</p>
                     </div>
                 </Fragment>
             })
