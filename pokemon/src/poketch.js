@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import ReactPaginate from 'react-paginate'
 import { useHistory } from "react-router-dom";
+import useInfiniteScroll from './useInfiniteHook'
 import LoginContext from './context';
 import axios from 'axios';
 
@@ -9,20 +9,21 @@ function Poketch () {
     const context = React.useContext(LoginContext);
     var [favorites, setfavorites] = useState(null);
     var [pokemon, setpokemon] = useState([]);
-    var [loading, setloading] = useState(false);
+    var [loading, setloading] = useInfiniteScroll(fetchMoreListItems);
     var [page, setpage] = useState(0);
-    var [y, sety] = useState(0);
-    var [pagenumber, setpagenumber] = useState(0);
-    const pokesperpage = 30;
-    const pagesVisited = pagenumber * pokesperpage;
-
     let history = useHistory();
 
+    function fetchMoreListItems() {
+        setTimeout(() => {
+          getpokes();
+          setloading(false);
+        }, 2000);
+      }
+
     async function getpokes() {
-        setloading(true);
+        alert("LOADING...")
         var new_pokes = []
         for (let i = page * 30 + 1; i < page * 30 + 31; i++) {
-            console.log("Loading pokemon #", i);
             await axios
             .get(`https://pokeapi.co/api/v2/pokemon/${i}`)
             .then(res => {
@@ -34,7 +35,6 @@ function Poketch () {
         }
         setpage(page + 1);
         setpokemon(pokemon.concat(new_pokes));
-        setloading(false);
     }
 
     useEffect(() => {
