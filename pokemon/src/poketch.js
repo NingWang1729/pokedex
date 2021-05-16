@@ -59,7 +59,7 @@ function Poketch () {
                 if (context.credentials.username == "") {
                     throw new Error("Must be logged in to use!")
                 } else if (res.ok) {
-                    alert("Displaying Pokemon!");
+                    // alert("Displaying Pokemon!");
                     console.log("Valid credentials");
                 } else {
                     console.log(res);
@@ -70,17 +70,17 @@ function Poketch () {
         )
         .then(
             (data) => {
-                console.log(data);
+                // console.log(data);
                 if (data.length > 0) {
                     setfavorites(data[data.length - 1].favorites);
                     setuserid(data[data.length - 1].user);
                 } else {
-                    console.log("no favorites yet!")
+                    console.log("No favorites yet!")
                 }
             }
         ).catch(
             (error) => {
-                alert(error);
+                // alert(error);
                 console.log(error);
                 history.push('/login');
             }
@@ -109,11 +109,11 @@ function Poketch () {
         )
         .then(
             (data) => {
-                console.log(data);
+                // console.log(data);
             }
         ).catch(
             (error) => {
-                console.log(error);
+                // console.log(error);
             }
         );
     }, [favorites])
@@ -127,9 +127,8 @@ function Poketch () {
         } else {
             favs = new Set(favorites.split(','));
         }
-        console.log(favs)
+        console.log("Favorites are now", favs)
         if (favs.has(pokemon_id.toString())) {
-            alert("deleting")
             favs.delete(pokemon_id.toString());
         } else {
             favs.add(pokemon_id);
