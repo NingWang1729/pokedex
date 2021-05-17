@@ -286,7 +286,7 @@ function Poketch () {
             <input type="text" value={searchbarvalue} placeholder="Pokesearch.." id="pokesearchbar" onChange={e => setsearchbarvalue(e.target.value)}></input>
             {/* <button onClick={update_display}>update fav display colors</button> */}
             {/* {display_favorites()} */}
-            <h1>{pokemon.length}</h1>
+            {/* <h1>{pokemon.length}</h1> */}
             <table className="pokemon-table">
                 <tbody>
                     {display_pokes()}

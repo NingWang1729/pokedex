@@ -15,10 +15,10 @@ function App() {
     <div className="App">
       <header className="App-header">
       <LoginContext.Provider value={{credentials, updateLogin}}>
-        <p>Username: {credentials.username}</p>
+        {/* <p>Username: {credentials.username}</p>
         <p>Password: {credentials.password}</p>
         <p>Token: {credentials.token}</p>
-        <p>User_id: {credentials.userid}</p>
+        <p>User_id: {credentials.userid}</p> */}
         <BrowserRouter basename={window.location.path || ''}>
           <Switch>
             <Route path="/" exact={true} component={Login}/>
