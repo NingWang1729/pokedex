@@ -12,6 +12,7 @@ function Poketch () {
     var [pokemon, setpokemon] = useState([]);
     var [loading, setloading] = useInfiniteScroll(loadpokemon);
     var [page, setpage] = useState(0);
+    var [searchbarvalue, setsearchbarvalue] = useState("");
     let history = useHistory();
 
     function loadpokemon() {
@@ -21,7 +22,7 @@ function Poketch () {
                 setloading(false);
             }
         }, 500);
-      }
+    }
 
     async function getpokes() {
         if (page >= 30) {
@@ -177,31 +178,47 @@ function Poketch () {
     }
 
     // Display pokemon table
-    function display_pokes() {
+    function display_pokes(e) {
         try {
             if (pokemon.length <= 0) {
                 return <tr><td>Loading....</td></tr>
             } else {
                 let pokearray = [];
+                let filtered_pokes;
                 let i = 0;
-                for (; i < pokemon.length - 2; i+=3) {
-                    pokearray.push([pokemon[i], pokemon[i+1], pokemon[i+2]])
+                if (searchbarvalue == "") {
+                    console.log("EMPTY SEARCH BAR");
+                    filtered_pokes = pokemon;
+                } else {
+                    console.log(searchbarvalue);
+                    filtered_pokes = pokemon.filter(poke => poke.species.name.indexOf(searchbarvalue) != -1)
+                    if (filtered_pokes.length <= 0) {
+                        getpokes();
+                        return;
+                    }
+                }
+
+                // Convert to a 2-D array
+                for (; i < filtered_pokes.length - 2; i+=3) {
+                    pokearray.push([filtered_pokes[i], filtered_pokes[i+1], filtered_pokes[i+2]])
                 }
                 let rest = [];
-                while (i < pokemon.length) {
-                    rest.push(pokemon[i++]);
+                while (i < filtered_pokes.length) {
+                    rest.push(filtered_pokes[i++]);
                 };
                 if (rest.length > 0) {
                     pokearray.push(rest);
                 }
-                return pokearray.map((pokerow, pokerowindex)=>{
+
+                // Return html elements
+                return pokearray.map((pokerow)=>{
                     return <tr>
-                        {pokerow.map((pokentry, pokentryindex)=>{
-                            return <td key={pokerowindex * 3 + pokentryindex + 1} id={pokerowindex * 3 + pokentryindex + 1}>
+                        {pokerow.map((pokentry)=>{
+                            return <td key={pokentry.id} id={pokentry.id}>
                                     <p>{pokentry.species.name}</p>
                                     <img src={pokentry.sprites.front_default} alt={pokentry.species.name + "picture"}/>
                                     <br />
-                                    <button id={pokerowindex * 3 + pokentryindex + 1} className="fav-button" onClick={() => {update_favorites(pokerowindex * 3 + pokentryindex + 1);}}>Fav#{pokerowindex * 3 + pokentryindex + 1}</button>
+                                    <button id={pokentry.id} className="fav-button" onClick={() => {update_favorites(pokentry.id);}}>Fav#{pokentry.id}</button>
                                 </td>
                         })}
                     </tr>
@@ -212,12 +229,14 @@ function Poketch () {
             console.log(error);
         }
     }
+
     return (
         <Fragment>
             <h1>Poketch</h1>
-            {/* <button onClick={update_display}>update fav display colors</button>
-            {display_favorites()}
-            <h1>{pokemon.length}</h1> */}
+            <input type="text" value={searchbarvalue} placeholder="Pokesearch.." id="pokesearchbar" onChange={e => setsearchbarvalue(e.target.value)}></input>
+            {/* <button onClick={update_display}>update fav display colors</button> */}
+            {/* {display_favorites()} */}
+            <h1>{pokemon.length}</h1>
             <table className="pokemon-table">
                 <tbody>
                     {display_pokes()}
