@@ -21,5 +21,7 @@ README:
         finished login page functionality with forced login
 
     Day 3:
-        TBD
+        Finished Application.
+        This includes full functionality for favoriting, displaying metadata, etc.
+        All that remains is to host the web application somewhere.
 
