@@ -1,11 +1,19 @@
 import React, { useState, useEffect, Fragment } from 'react';
+import Button from "@material-ui/core/Button";
+import { makeStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import { useHistory } from "react-router-dom";
 import useInfiniteScroll from './useInfiniteHook'
 import LoginContext from './context';
 import axios from 'axios';
 
+
 function Poketch () {
-    // Better than react hooks imo
     const context = React.useContext(LoginContext);
     var [favorites, setfavorites] = useState(null);
     var [userid, setuserid] = useState(context.credentials.userid);
@@ -16,6 +24,25 @@ function Poketch () {
     var [showdata, setshowdata] = useState(false);
     var [dataid, setdataid] = useState(1);
     let history = useHistory();
+
+    const useStyles = makeStyles({
+        root: {
+          minWidth: 275,
+        },
+        bullet: {
+          display: 'inline-block',
+          margin: '0 2px',
+          transform: 'scale(0.8)',
+        },
+        title: {
+          fontSize: 32,
+          color: "Blue",
+          fontWeight: "bold"
+        },
+    });
+    const classes = useStyles();
+    const bull = <span className={classes.bullet}>•</span>;
+
 
     function loadpokemon() {
         setTimeout(() => {
@@ -179,6 +206,7 @@ function Poketch () {
         }
     }
 
+    // Metadata "Popup" for pokedex details
     function renderdata() {
         if (dataid == null || dataid <= 0 || pokemon == null || pokemon.length <= 0) {
             return;
@@ -186,31 +214,45 @@ function Poketch () {
         let totalmoves = pokemon[dataid - 1].moves.length;
         let movearray = JSON.parse(JSON.stringify(pokemon[dataid - 1].moves));
         movearray.length = Math.min(movearray.length, 4);
-        return <div className="pokedex" style={{position: "fixed", top: "5%", background : "navy", width : "30%", display: showdata ? "block" : "none"}} onClick={()=>{setshowdata(false);}}>
-        <p>{pokemon[dataid - 1].species.name.toUpperCase()}</p>
-        <img src={pokemon[dataid - 1].sprites.front_default} alt={pokemon[dataid - 1].species.name + "picture"}/>
-        <p>NationalDex #{pokemon[dataid - 1].id}</p>
-        <ul style={{flex : "none", textAlign : "left", paddingLeft : "30%"}}>Type(s):
-            {
-                pokemon[dataid - 1].types.map((type)=>{
-                    return <li style={{textAlign : "left"}}>{type.type.name}</li>
-                })
-            }
-        </ul>
-        <ul style={{flex : "none", textAlign : "left", paddingLeft : "30%"}}>Abilities:
-            {
-                pokemon[dataid - 1].abilities.map((ability)=>{
-                    return <li style={{textAlign : "left"}}>{ability.ability.name}</li>
-                })
-            }
-        </ul>
-        <ul style={{flex : "none", textAlign : "left", paddingLeft : "30%"}}>Some Moves ({totalmoves})
-            {   
-                movearray.map((move)=>{
-                    return <li style={{textAlign : "left"}}>{move.move.name}</li>
-                })
-            }
-        </ul>
+        return <div className="pokedex" style={{position: "fixed", top: "0%", background : "navy", width : "30%", zIndex : "1", display: showdata ? "block" : "none"}} onClick={()=>{setshowdata(false);}}>
+        <Card className={classes.root} variant="outlined">
+            <CardContent>
+                <Typography className={classes.title} color="textSecondary" gutterBottom>
+                    {pokemon[dataid - 1].species.name.toUpperCase()}
+                </Typography>
+                <img src={pokemon[dataid - 1].sprites.front_default} alt={pokemon[dataid - 1].species.name + "picture"}/>
+                <Typography variant="h5" component="h2">
+                    NationalDex #{pokemon[dataid - 1].id}
+                </Typography>
+                <List style={{flex : "none", textAlign : "left", fontSize : "16px", paddingLeft : "20%", paddingRight : "20%"}}>Type(s):
+                    {
+                        pokemon[dataid - 1].types.map((type)=>{
+                            return <ListItem button>
+                            {bull}<ListItemText primary={type.type.name} />
+                            </ListItem>
+                        })
+                    }
+                </List>
+                <List style={{flex : "none", textAlign : "left", fontSize : "16px", paddingLeft : "20%", paddingRight : "20%"}}>Abilities:
+                    {
+                        pokemon[dataid - 1].abilities.map((ability)=>{
+                            return <ListItem button>
+                            {bull}<ListItemText primary={ability.ability.name} />
+                            </ListItem>
+                        })
+                    }
+                </List>
+                <List style={{flex : "none", textAlign : "left", fontSize : "16px", paddingLeft : "20%", paddingRight : "20%"}}>Possible Moves ({totalmoves} in total)
+                    {   
+                        movearray.map((move)=>{
+                            return <ListItem button>
+                            {bull}<ListItemText primary={move.move.name} />
+                            </ListItem>
+                        })
+                    }
+                </List>
+            </CardContent>
+        </Card>
         </div>
     }
 
@@ -252,8 +294,13 @@ function Poketch () {
                     return <tr>
                         {pokerow.map((pokentry)=>{
                             return <td 
-                                        key={pokentry.id} 
-                                        id={pokentry.id} 
+                                        key={pokentry.id}
+                                        id={pokentry.id}
+                                        className="pokentry"
+                                        style={{
+                                            background : "cornflowerblue",
+                                            width : "33.33%"
+                                        }}
                                         onClick={()=>{
                                             if (showdata == true && pokentry.id == dataid) {
                                                 setshowdata(false);
@@ -264,10 +311,10 @@ function Poketch () {
                                             }
                                         }}
                                     >
-                                    <p>{pokentry.species.name}</p>
+                                    <p style={{fontWeight : "bold"}}>{pokentry.species.name.toUpperCase()}</p>
                                     <img src={pokentry.sprites.front_default} alt={pokentry.species.name + "picture"}/>
                                     <br />
-                                    <button id={pokentry.id} className="fav-button" onClick={() => {update_favorites(pokentry.id);}}>Fav#{pokentry.id}</button>
+                                    <Button id={pokentry.id} className="fav-button" variant="contained" color="primary" onClick={() => {update_favorites(pokentry.id);}}>Fav#{pokentry.id}</Button>
                                 </td>
                         })}
                     </tr>
