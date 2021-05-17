@@ -87,6 +87,9 @@ function Poketch () {
         );
     }, [])
 
+    // Update display of favorites
+    useEffect(()=>{update_display(); console.log("updating fav display")});
+
     // Component did update [favorites]
     useEffect(() => {
         console.log("favorites changed to", favorites);
@@ -116,7 +119,29 @@ function Poketch () {
                 // console.log(error);
             }
         );
+        // Update favorite button display
+        update_display();
     }, [favorites])
+
+    function update_display() {
+        let favs;
+        if (favorites == null) {
+            favs = new Set([]);
+        } else {
+            favs = new Set(favorites.split(','));
+        }
+        let poketable = document.getElementsByClassName("fav-button");
+        for (let i = 0; i < poketable.length; i++) {
+            if (favs.has((poketable.item(i).id).toString())) {
+                poketable.item(i).style.background = "chartreuse";
+                poketable.item(i).style.color = "blue";
+            } else {
+                poketable.item(i).style.background = "crimson";
+                poketable.item(i).style.color = "azure";
+            }
+        }
+        return;
+    }
 
     // Updates favorites
     function update_favorites (pokemon_id) {
@@ -176,7 +201,7 @@ function Poketch () {
                                     <p>{pokentry.species.name}</p>
                                     <img src={pokentry.sprites.front_default} alt={pokentry.species.name + "picture"}/>
                                     <br />
-                                    <button onClick={() => {update_favorites(pokerowindex * 3 + pokentryindex + 1);}}>Fav#{pokerowindex * 3 + pokentryindex + 1}</button>
+                                    <button id={pokerowindex * 3 + pokentryindex + 1} className="fav-button" onClick={() => {update_favorites(pokerowindex * 3 + pokentryindex + 1);}}>Fav#{pokerowindex * 3 + pokentryindex + 1}</button>
                                 </td>
                         })}
                     </tr>
@@ -189,9 +214,10 @@ function Poketch () {
     }
     return (
         <Fragment>
-            <p>Poketch</p>
+            <h1>Poketch</h1>
+            {/* <button onClick={update_display}>update fav display colors</button>
             {display_favorites()}
-            <h1>{pokemon.length}</h1>
+            <h1>{pokemon.length}</h1> */}
             <table className="pokemon-table">
                 <tbody>
                     {display_pokes()}
