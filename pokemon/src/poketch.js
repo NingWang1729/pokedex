@@ -13,6 +13,8 @@ function Poketch () {
     var [loading, setloading] = useInfiniteScroll(loadpokemon);
     var [page, setpage] = useState(0);
     var [searchbarvalue, setsearchbarvalue] = useState("");
+    var [showdata, setshowdata] = useState(false);
+    var [dataid, setdataid] = useState(1);
     let history = useHistory();
 
     function loadpokemon() {
@@ -177,6 +179,41 @@ function Poketch () {
         }
     }
 
+    function renderdata() {
+        if (dataid == null || dataid <= 0 || pokemon == null || pokemon.length <= 0) {
+            return;
+        }
+        let totalmoves = pokemon[dataid - 1].moves.length;
+        let movearray = JSON.parse(JSON.stringify(pokemon[dataid - 1].moves));
+        movearray.length = Math.min(movearray.length, 4);
+        return <div className="pokedex" style={{position: "fixed", top: "5%", background : "navy", width : "30%", display: showdata ? "block" : "none"}} onClick={()=>{setshowdata(false);}}>
+        <p>{pokemon[dataid - 1].species.name.toUpperCase()}</p>
+        <img src={pokemon[dataid - 1].sprites.front_default} alt={pokemon[dataid - 1].species.name + "picture"}/>
+        <p>NationalDex #{pokemon[dataid - 1].id}</p>
+        <ul style={{flex : "none", textAlign : "left", paddingLeft : "30%"}}>Type(s):
+            {
+                pokemon[dataid - 1].types.map((type)=>{
+                    return <li style={{textAlign : "left"}}>{type.type.name}</li>
+                })
+            }
+        </ul>
+        <ul style={{flex : "none", textAlign : "left", paddingLeft : "30%"}}>Abilities:
+            {
+                pokemon[dataid - 1].abilities.map((ability)=>{
+                    return <li style={{textAlign : "left"}}>{ability.ability.name}</li>
+                })
+            }
+        </ul>
+        <ul style={{flex : "none", textAlign : "left", paddingLeft : "30%"}}>Some Moves ({totalmoves})
+            {   
+                movearray.map((move)=>{
+                    return <li style={{textAlign : "left"}}>{move.move.name}</li>
+                })
+            }
+        </ul>
+        </div>
+    }
+
     // Display pokemon table
     function display_pokes(e) {
         try {
@@ -214,7 +251,19 @@ function Poketch () {
                 return pokearray.map((pokerow)=>{
                     return <tr>
                         {pokerow.map((pokentry)=>{
-                            return <td key={pokentry.id} id={pokentry.id}>
+                            return <td 
+                                        key={pokentry.id} 
+                                        id={pokentry.id} 
+                                        onClick={()=>{
+                                            if (showdata == true && pokentry.id == dataid) {
+                                                setshowdata(false);
+                                                setdataid(null);
+                                            } else {
+                                                setshowdata(true);
+                                                setdataid(pokentry.id);
+                                            }
+                                        }}
+                                    >
                                     <p>{pokentry.species.name}</p>
                                     <img src={pokentry.sprites.front_default} alt={pokentry.species.name + "picture"}/>
                                     <br />
@@ -233,6 +282,7 @@ function Poketch () {
     return (
         <Fragment>
             <h1>Poketch</h1>
+            {renderdata()}
             <input type="text" value={searchbarvalue} placeholder="Pokesearch.." id="pokesearchbar" onChange={e => setsearchbarvalue(e.target.value)}></input>
             {/* <button onClick={update_display}>update fav display colors</button> */}
             {/* {display_favorites()} */}
