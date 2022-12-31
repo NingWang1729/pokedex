@@ -24,4 +24,3 @@ README:
         Finished Application.
         This includes full functionality for favoriting, displaying metadata, etc.
         All that remains is to host the web application somewhere.
-        https://ningwang1729-pokedex-frontend.herokuapp.com/
